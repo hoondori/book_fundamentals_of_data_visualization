@@ -1,18 +1,73 @@
----
-title: 'Ch01: Visualizing data: Mapping data onto aesthetics'
-output: github_document
----
+Ch01: Visualizing data: Mapping data onto aesthetics
+================
 
-```{r}
+``` r
 library(forcats)
 library(patchwork)
 library(lubridate)
+```
+
+    ## 
+    ## 다음의 패키지를 부착합니다: 'lubridate'
+
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     date, intersect, setdiff, union
+
+``` r
 library(cowplot)
+```
+
+    ## 
+    ## 다음의 패키지를 부착합니다: 'cowplot'
+
+    ## The following object is masked from 'package:lubridate':
+    ## 
+    ##     stamp
+
+    ## The following object is masked from 'package:patchwork':
+    ## 
+    ##     align_plots
+
+``` r
 library(dviz.supp)
 ```
 
+    ## 필요한 패키지를 로딩중입니다: colorspace
 
-```{r common-aesthetics, fig.width = 6, fig.asp = 0.45, fig.cap = '(ref:common-aesthetics)'}
+    ## 필요한 패키지를 로딩중입니다: colorblindr
+
+    ## 필요한 패키지를 로딩중입니다: ggplot2
+
+    ## 필요한 패키지를 로딩중입니다: dplyr
+
+    ## 
+    ## 다음의 패키지를 부착합니다: 'dplyr'
+
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     filter, lag
+
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     intersect, setdiff, setequal, union
+
+    ## 
+    ## 다음의 패키지를 부착합니다: 'dviz.supp'
+
+    ## The following objects are masked from 'package:cowplot':
+    ## 
+    ##     plot_grid, stamp, stamp_bad, stamp_good, stamp_ugly, stamp_wrong
+
+    ## The following object is masked from 'package:lubridate':
+    ## 
+    ##     stamp
+
+    ## The following object is masked from 'package:datasets':
+    ## 
+    ##     CO2
+
+``` r
 aes_pos <- ggdraw() + 
   geom_segment(data = data.frame(x = c(0, 0.5),
                                  xend = c(1, 0.5),
@@ -23,7 +78,11 @@ aes_pos <- ggdraw() +
   draw_text("y", .5, 1, size = 12, vjust = 1, hjust = 2.5, family = dviz_font_family) +
   draw_text("x", 1, .5, size = 12, vjust = 2, hjust = 1, family = dviz_font_family) + 
   coord_cartesian(xlim = c(-.2, 1.2), ylim = c(-.2, 1.2))
+```
 
+    ## Coordinate system already present. Adding new coordinate system, which will replace the existing one.
+
+``` r
 aes_color <- ggdraw() +
   geom_tile(data = data.frame(x = 0.15 + .2333*(0:3)),
             aes(x, y = .5, fill = factor(x)), width = .2, height = .6) +
@@ -65,9 +124,9 @@ plot_grid(aes_pos, aes_shape, aes_size,
           label_x = 0.05, label_y = 0.95, hjust = 0, vjust = 1)
 ```
 
+![(ref:common-aesthetics)](ch01_aesthetic_mapping_files/figure-gfm/common-aesthetics-1.png)
 
-
-```{r basic-scales-example, fig.width = 5.5, fig.asp = 0.3, fig.cap = '(ref:basic-scales-example)'}
+``` r
 df <- data.frame(x = c(1:4))
 
 scale_num <- ggplot(df, aes(x)) + 
@@ -110,8 +169,9 @@ scale_shape <- ggplot(df, aes(x, shape = factor(x))) +
 scale_num + scale_shape + scale_color + plot_layout(ncol = 1)
 ```
 
+![(ref:basic-scales-example)](ch01_aesthetic_mapping_files/figure-gfm/basic-scales-example-1.png)
 
-```{r temp-normals-vs-time, fig.cap = '(ref:temp-normals-vs-time)'}
+``` r
 temps_long <- filter(ncdc_normals,
                 station_id %in% c(
                   "USW00014819", # Chicago, IL 60638
@@ -146,8 +206,9 @@ ggplot(temps_long, aes(x = date, y = temperature, color = location)) +
   theme(legend.title.align = 0.5)
 ```
 
+![(ref:temp-normals-vs-time)](ch01_aesthetic_mapping_files/figure-gfm/temp-normals-vs-time-1.png)
 
-```{r four-locations-temps-by-month, fig.width = 5.5*6/4.2, fig.asp = .3, fig.cap = '(ref:four-locations-temps-by-month)'}
+``` r
 month_names <- c("01" = "Jan", "02" = "Feb", "03" = "Mar", "04" = "Apr", "05" = "May", "06" = "Jun",
                    "07" = "Jul", "08" = "Aug", "09" = "Sep", "10" = "Oct", "11" = "Nov", "12" = "Dec")
 
@@ -158,7 +219,11 @@ mean_temps <- temps_long %>%
   ungroup() %>%
   mutate(month = month_names[month]) %>%
   mutate(month = factor(month, levels = unname(month_names)))
+```
 
+    ## `summarise()` has grouped output by 'location'. You can override using the `.groups` argument.
+
+``` r
 p <- ggplot(mean_temps, aes(x = month, y = location, fill = mean)) + 
   geom_tile(width = .95, height = 0.95) + 
   scale_fill_viridis_c(option = "B", begin = 0.15, end = 0.98,
@@ -175,3 +240,5 @@ p <- ggplot(mean_temps, aes(x = month, y = location, fill = mean)) +
 # fix legend (make it centered)
 ggdraw(align_legend(p))
 ```
+
+![(ref:four-locations-temps-by-month)](ch01_aesthetic_mapping_files/figure-gfm/four-locations-temps-by-month-1.png)
